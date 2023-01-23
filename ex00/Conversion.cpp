@@ -46,126 +46,163 @@ bool	Converter::isChar(void) {
 }
 //CHECK THESE 3x funcitons!!
 
+int		Converter::getPrecision() const {
+
+	char const	*p;
+	int			precision;
+	int			i;
+	
+	p = this->_userInput;
+	precision = 0;
+	i = 0;
+	while (p[i] != '\0' && p[i] != '.')
+		i++;
+	i++;
+	if (p[i] && p[i] == '.') {
+		while (p[i] != '\0' && p[i] != 'f') {
+			precision++;
+			i++;
+	}
+	}
+	if (precision == 0)
+		precision++;
+	return precision;
+}
 
 bool	Converter::isInt(void)
 {
 	if (_userInput[0] != '-' && _userInput[0] != '+' && !isdigit(_userInput[0]))
 		return (false);
-	for (unsigned long i = 1; _userInput[i]; i++)
+	for (int i = 1; _userInput[i]; i++)
 	{
-		if (isdigit(_userInput[i]) == false)
+		if (isdigit(_userInput[i]) == false || _userInput[i] == '.')
 			return (false);
 	}
+	this->_i = atoi_impl<int>(this->_userInput);
 	return (true);
 }
 
-// bool	Converter::isFloat(void)
-// {
-// 	std::string	const specialType[4] = {"inff", "-inff", "+inff", "nanf"};
-
-// 	for (unsigned long i = 0; i < 4; i++)
-// 	{
-// 		if (_userInput == specialType[i])
-// 		{
-// 			this->_specialType = true;
-// 			return (true);
-// 		}
-// 	}
-// 	if (isNumber() && _userInput[_userInput.length() - 1] == 'f')
-// 	{
-// 		if (this->_precision > 1)
-// 			this->_precision--;
-// 		return (true);
-// 	}
-// 	return (false);
-// }
-
-// bool	Converter::isDouble(void)
-// {
-// 	std::string	const specialType[4] = {"inf", "-inf", "+inf", "nan"};
-
-// 	for (int i = 0; i < 4; i++)
-// 	{
-// 		if (_userInput == specialType[i])
-// 		{
-// 			this->_specialType = true;
-// 			return (true);
-// 		}
-// 	}
-// 	if (isNumber() == false)
-// 		return (false);
-// 	return (true);
-// }
-
-
-// void	Converter::setAndConvert(void) {
-
-// 	if (isChar() == true)
-// 		convertChar(this->_c);
-// 	else if (isInt() == true)
-// 		convertInt(this->_i);
-// 	//else if (is)
-// }
-
-/* wil always fail for NaN*/
-bool isNumber(double x) 
+bool	Converter::isFloat(void)
 {
-	// This looks like it should always be true, 
-	// but it's false if x is a NaN.
-	return (x == x); 
+	std::string	const forScience[4] = {"inff", "-inff", "+inff", "nanf"};
+
+
+	for (unsigned long i = 0; i < 4; i++)
+	{
+		if (_userInput == forScience[i])
+		{
+			this->forScienceFloat = true;
+			return (true);
+		}
+	}
+	if (_userInput[_str.length() - 1] == 'f')
+	{
+		this->_f = atof_cpp(this->_userInput);
+		return (true);
+	}
+	return (false);
 }
 
-bool isFiniteNumber(double x) 
-    {
-        return (x <= DBL_MAX && x >= -DBL_MAX); 
-    }  
+bool	Converter::isDouble(void)
+{
+	std::string	const forScience[4] = {"inf", "-inf", "+inf", "nan"};
 
-// bool	is_float(char *str) {
+	for (int i = 0; i < 4; i++)
+	{
+		if (_userInput == forScience[i])
+		{
+			this->forScienceDouble = true;
+			return (true);
+		}
+	}
+	if (isFiniteNumber(atof_cpp(this->_userInput)) == false)
+		return (false);
+	this->_d = atof_cpp(this->_userInput);
+	return (true);
+}
 
-// }
 
-// bool	is_double(char *str) {
+bool Converter::isFiniteNumber(double x) {
 
-// }
+	return (x <= DBL_MAX && x >= -DBL_MAX); 
+}
 
+void	Converter::convertChar(void) {
 
+		//i = c;//implicit type conversion!
+		this->_i = static_cast<int>(this->_c);//explicit type conversion
+		this->_f = static_cast<float>(this->_c);
+		this->_d = static_cast<double>(this->_c);
 
-// void	Converter::convertChar(char c) {
+}
 
-// 		//i = c;//implicit type conversion!
-// 		this->_i = static_cast<int>(c);//explicit type conversion
-// 		this->_f = static_cast<float>(c);
-// 		this->_d = static_cast<double>(c);
+void	Converter::convertInt(void) {
 
-// }
+	this->_c = static_cast<char>(this->_i);
+	this->_f = static_cast<float>(this->_i);
+	this->_d = static_cast<double>(this->_i);
+}
 
-// char	Converter::getChar() const {
+void	Converter::convertFloat() {
 
-// 	return this->_c;
-// }
+	if (forScienceFloat == true)
+		return;
+	this->_c = static_cast<char>(this->_f);
+	this->_i = static_cast<float>(this->_f);
+	this->_d = static_cast<double>(this->_f);
+}
 
-// int	Converter::getInt() const {
+char	Converter::getChar() const {
 
-// 	return this->_i;
-// }
+	return this->_c;
+}
 
-// float	Converter::getFloat() const {
+int	Converter::getInt() const {
 
-// 	return this->_f;
-// }
+	return this->_i;
+}
 
-// double	Converter::getDouble() const {
+float	Converter::getFloat() const {
 
-// 	return this->_d;
-// }
+	return this->_f;
+}
 
-// std::ostream & operator<<( std::ostream & o, Converter const *obj) {
+double	Converter::getDouble() const {
 
-// 	// YOU NEED TO SET PRECISION HERE
-// 	//std::cout << std::fixed << std::setprecision(obj.getPrecision());
-// 	o << "char: " << obj->getChar() << std::endl;
-// 	o << "int: " << obj->getInt() << std::endl;
-// 	o << "float: " << obj->getFloat() << std::endl;
-// 	o << "double: " << obj->getDouble() << std::endl;
-// 	return o;
-// }
+	return this->_d;
+}
+
+std::string	Converter::getStr() const {
+	return this->_str;
+}
+std::ostream & operator<<( std::ostream & o, Converter const *obj) {
+
+	// YOU NEED TO SET PRECISION HERE
+	//std::cout << std::fixed << std::setprecision(obj->getPrecision());
+
+	//std::cout << "precision = " << obj->getPrecision() << std::endl;
+	if (obj->forScienceFloat == true) {
+		std::cout << "char: impossible\n";
+		std::cout << "int: impossible\n";
+		std::cout << "float: " << obj->getStr() << std::endl;
+		std::string d_string = obj->getStr().substr(0, obj->getStr().size()-1);
+		std::cout << "double: " << d_string;
+	}
+	else if (obj->forScienceDouble == true) {
+		std::cout << "char: impossible\n";
+		std::cout << "int: impossible\n";
+		std::cout << "float: " << obj->getStr() << 'f' << std::endl;
+		//std::string d_string = obj->getStr().substr(0, obj->getStr().size()-1);
+		std::cout << "double: " << obj->getStr();
+	}
+	else {
+		if (obj->getChar())
+		o << "char: " << obj->getChar() << std::endl;
+	else
+		std::cout << "char: Non displayable\n";
+	o << "int: " << obj->getInt() << std::endl;
+	o << "float: " << std::setprecision(obj->getPrecision()) << std::fixed << obj->getFloat() << "f" << std::endl;
+	o << "double: " << std::setprecision(obj->getPrecision()) << std::fixed << obj->getDouble();
+	}
+	return o;
+}

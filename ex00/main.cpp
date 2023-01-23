@@ -1,76 +1,40 @@
 #include "Conversion.hpp"
 
-/*checks if specific character inside a string*/
-bool isInside(const std::string & str, char c)
+
+// int	ft_atoi_cpp(const char *str)
+// {
+// 	int	minus;
+// 	int	res;
+// 	int	i;
+
+// 	res = 0;
+// 	minus = 1;
+// 	i = 0;
+
+// 	if (str[i] == '-')
+// 	{
+// 		minus = -1;
+// 		i++;
+// 	}
+// 	else if (str[i] == '+')
+// 		i++;
+// 	while (str[i] >= 48 && str[i] <= 57)
+// 	{
+// 		if (isdigit(str[i]) != 0)
+// 			return (0);
+// 		res = (res * 10) + (str[i] - '0');
+// 		i++;//12b
+// 	}
+// 	return (res * minus);
+// }
+int atoi(const char* str)
 {
-    return str.find(c) != std::string::npos;
+    return atoi_impl<int>(str);
 }
 
-/* checks for;
-1. only one string input
-2. with stringlen of at least 1 char
-*/
-int	err_check_size(int argc, char **argv) {
+double atod(const char *str) {
 
-	if (argc != 2) {
-		std::cout << "Error: incorrect number of arguments\n";
-		return 0;
-	}
-	std::string str = argv[1];
-	if (str.length() == 0) 
-	{
-		std::cout << "Error: no input found\n";
-		return 0;
-	}
-	if (str.length() != 1 && isInside(str, ' '))
-	{
-		std::cout << "No spaces in the string input plz\n";
-		return 0;
-	}
-	if(argv[1][0] == '0' && isdigit(argv[1][1])) {
-		std::cout << "Give me easier input, please :)\n";
-		return 0;
-	}
-	return 1;
-}
-
-
-/* checks for:
-3. no spaces inside argv (if argv = "1 and 2 and 3")
-4. that there is only one decimal point if at all
-5. that there is no combination of letters and number */
-
-int	err_check_content(char **argv) {
-
-	int i = 0;
-	int d = 0;
-	int k = 0;
-	int j = 0;
-
-	if (argv[1][i] == '-')
-		i++;
-	while (argv[1][i]) {
-		if (argv[1][i] == '.')
-			d++;
-		if ((argv[1][i] == '.' && !argv[1][i+1]) || (argv[1][i] == '.' && !argv[1][i+1])){
-			std::cout << "Decimal point must be followed by a number!\n";
-			return 0;
-		}
-		if (d >= 2) {
-			std::cout << "One decimal point only!\n";
-			return 0;
-		}
-		j += isalpha(argv[1][i]);
-		k += isdigit(argv[1][i]);
-
-		if (j > 0 && k > 0) {
-			std::cout << "Combination of letters and numbers not permitted\n";
-			return 0;
-		}
-		i++;
-	}
-
-	return 1;
+	return atoi_impl<double>(str);
 }
 
 int	main(int argc, char **argv) {
@@ -78,6 +42,18 @@ int	main(int argc, char **argv) {
 	if (!err_check_content(argv) || !err_check_size(argc, argv))
 		return 0;
 
+	Converter	sample1(argv[1]);
 
+	if (sample1.isChar() == true)
+		sample1.convertChar();
+	else if (sample1.isInt() == true)
+		sample1.convertInt();
+	else if (sample1.isFloat() == true)
+		sample1.convertFloat();
+	else if (sample1.isDouble() == true)
+		std::cout << "isDouble\n";
+	else
+		std::cout << "Type conversion not possible\n";
+	std::cout << &sample1 << std::endl;
 	return 0;
 }

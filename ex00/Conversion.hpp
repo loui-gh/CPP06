@@ -9,6 +9,32 @@
 #include <float.h>
 #include <limits.h>
 
+template<typename T>
+T atoi_impl(const char* str)
+{
+    while (std::isspace(static_cast<unsigned char>(*str)))
+    {
+        ++str;
+    }
+    bool negative = false;
+    if (*str == '+')
+    {
+        ++str;
+    }
+    else if (*str == '-')
+    {
+        ++str;
+        negative = true;
+    }
+    T result = 0;
+    for (; std::isdigit(static_cast<unsigned char>(*str)); ++str)
+    {
+		int digit = *str - '0';
+        result *= 10;
+        result -= digit; // calculate in negatives to support INT_MIN, LONG_MIN,..
+    }
+	return negative ? result : -result;
+}
 
 class	Converter
 {
@@ -26,17 +52,22 @@ class	Converter
 
 		// void	setAndConvert(void);
 		
-		// void	convertChar(char c);
-		// void	convertInt(int i);
-		// void	convertFloat(float f);
+		void	convertChar();
+		void	convertInt();
+		void	convertFloat();
 		// void	convertdouble(double d);
 
-		// char	getChar() const;
-		// int		getInt() const;
-		// float	getFloat() const;
-		// double	getDouble() const;
+		int		getPrecision() const;
+		std::string	getStr() const;
+		char	getChar() const;
+		int		getInt() const;
+		float	getFloat() const;
+		double	getDouble() const;
 
 		//bool	isInside( const std::string & str, char c);
+		bool		forScienceFloat;
+		bool		forScienceDouble;
+		bool	isFiniteNumber(double x);
 
 	private:
 
@@ -45,10 +76,15 @@ class	Converter
 		float	_f;
 		double	_d;
 
-		char const *_userInput;
+		char const	*_userInput;
 		std::string	_str;
+
 };
 
 std::ostream & operator<<(std::ostream & o, Converter const *obj);
+
+int		err_check_content(char **argv);
+int		err_check_size(int argc, char **argv);
+double	atof_cpp(const char* str);
 
 #endif

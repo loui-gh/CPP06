@@ -1,5 +1,6 @@
 # CPP06
 
+QUESTIONS: How did you tell the difference between float and double?
 ***RULE*** For each exercise, the type conversion must be solved using one specific type of casting.
 Your choice will be checked during defense. (the eval sheet requires static_cast to be used)
 

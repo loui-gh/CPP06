@@ -1,4 +1,4 @@
-SRC		= Conversion.cpp main.cpp
+SRC		= Conversion.cpp main.cpp error_handling.cpp number.cpp
 
 OBJ		= ${SRC:.cpp=.o}
 
