@@ -7,7 +7,10 @@
 #include <iomanip>
 #include <stdlib.h>
 #include <float.h>
+#include <cmath>
 #include <limits.h>
+#include <limits>
+# include <cerrno>
 
 template<typename T>
 T atoi_impl(const char* str)
@@ -55,7 +58,7 @@ class	Converter
 		void	convertChar();
 		void	convertInt();
 		void	convertFloat();
-		// void	convertdouble(double d);
+		void	convertDouble();
 
 		int		getPrecision() const;
 		std::string	getStr() const;
@@ -65,9 +68,13 @@ class	Converter
 		double	getDouble() const;
 
 		//bool	isInside( const std::string & str, char c);
-		bool		forScienceFloat;
-		bool		forScienceDouble;
+		bool	forScienceFloat;
+		bool	forScienceDouble;
 		bool	isFiniteNumber(double x);
+
+		bool	overflowInt;
+		bool	overflowDouble;
+		bool	overflowFloat;
 
 	private:
 
@@ -83,8 +90,8 @@ class	Converter
 
 std::ostream & operator<<(std::ostream & o, Converter const *obj);
 
-int		err_check_content(char **argv);
-int		err_check_size(int argc, char **argv);
+int			err_check_content(char **argv);
+int			err_check_size(int argc, char **argv);
 double	atof_cpp(const char* str);
 
 #endif

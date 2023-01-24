@@ -8,6 +8,9 @@ Converter::Converter(char const * userInput) {
 
 	this->_userInput = userInput;
 	this->_str = userInput;
+	this->overflowDouble = false;
+	this->overflowFloat = false;
+	this->overflowInt = false;
 }
 
 /*copy constructor*/
@@ -57,7 +60,6 @@ int		Converter::getPrecision() const {
 	i = 0;
 	while (p[i] != '\0' && p[i] != '.')
 		i++;
-	i++;
 	if (p[i] && p[i] == '.') {
 		while (p[i] != '\0' && p[i] != 'f') {
 			precision++;
@@ -66,8 +68,12 @@ int		Converter::getPrecision() const {
 	}
 	if (precision == 0)
 		precision++;
+	else
+		precision--;
+
 	return precision;
 }
+
 
 bool	Converter::isInt(void)
 {
@@ -78,15 +84,12 @@ bool	Converter::isInt(void)
 		if (isdigit(_userInput[i]) == false || _userInput[i] == '.')
 			return (false);
 	}
-	this->_i = atoi_impl<int>(this->_userInput);
 	return (true);
 }
 
 bool	Converter::isFloat(void)
 {
 	std::string	const forScience[4] = {"inff", "-inff", "+inff", "nanf"};
-
-
 	for (unsigned long i = 0; i < 4; i++)
 	{
 		if (_userInput == forScience[i])
@@ -95,10 +98,22 @@ bool	Converter::isFloat(void)
 			return (true);
 		}
 	}
-	if (_userInput[_str.length() - 1] == 'f')
+
+	/*does it contain a decimal point?*/
+	char	ch = '.';
+	if (getStr().find(ch) != std::string::npos && _userInput[_str.length() - 1] == 'f')
 	{
-		this->_f = atof_cpp(this->_userInput);
-		return (true);
+		/*is it bigger than float?*/
+		double convertFloat = atof_cpp(this->_userInput);
+		if (convertFloat > FLT_MAX || convertFloat < FLT_MIN) {
+			this->overflowFloat = true;
+			this->overflowInt = true;
+			return false;
+		}
+		else {
+			this->_f = static_cast<float>(convertFloat);
+			return (true);
+		}
 	}
 	return (false);
 }
@@ -115,20 +130,22 @@ bool	Converter::isDouble(void)
 			return (true);
 		}
 	}
-	if (isFiniteNumber(atof_cpp(this->_userInput)) == false)
-		return (false);
-	this->_d = atof_cpp(this->_userInput);
+	/*is it bigger than float?*/
+	double convertDbl = atof_cpp(this->_userInput);
+	if (convertDbl > DBL_MAX || convertDbl < DBL_MIN) {
+		this->overflowDouble = true;
+		this->overflowFloat = true;
+		this->overflowInt = true;
+		return false;
+	}
+	else
+		this->_d = atof_cpp(this->_userInput);
 	return (true);
-}
-
-
-bool Converter::isFiniteNumber(double x) {
-
-	return (x <= DBL_MAX && x >= -DBL_MAX); 
 }
 
 void	Converter::convertChar(void) {
 
+		std::cout << "IS CHAR\n";
 		//i = c;//implicit type conversion!
 		this->_i = static_cast<int>(this->_c);//explicit type conversion
 		this->_f = static_cast<float>(this->_c);
@@ -138,19 +155,41 @@ void	Converter::convertChar(void) {
 
 void	Converter::convertInt(void) {
 
-	this->_c = static_cast<char>(this->_i);
-	this->_f = static_cast<float>(this->_i);
-	this->_d = static_cast<double>(this->_i);
+	std::cout << "IS INT\n";
+	long int	longInt = atoi_impl<long int>(this->_userInput);
+	if (this->getStr().length() > 11 || longInt > std::numeric_limits<int>::max() || longInt < std::numeric_limits<int>::min()) {
+		this->overflowDouble = true;
+		this->overflowFloat = true;
+		this->overflowInt = true;
+	}
+	else {
+		this->_i = 
+		this->_c = static_cast<char>(this->_i);
+		this->_f = static_cast<float>(this->_i);
+		this->_d = static_cast<double>(this->_i);
+	}
 }
 
 void	Converter::convertFloat() {
 
+	std::cout << "IS FLOAT\n";
 	if (forScienceFloat == true)
 		return;
 	this->_c = static_cast<char>(this->_f);
 	this->_i = static_cast<float>(this->_f);
 	this->_d = static_cast<double>(this->_f);
 }
+
+void	Converter::convertDouble() {
+
+	std::cout << "IS DOUBLE\n";
+	if (forScienceDouble == true)
+		return;
+	this->_c = static_cast<char>(this->_d);
+	this->_i = static_cast<float>(this->_d);
+	this->_f = static_cast<double>(this->_d);
+}
+
 
 char	Converter::getChar() const {
 
@@ -180,13 +219,13 @@ std::ostream & operator<<( std::ostream & o, Converter const *obj) {
 	// YOU NEED TO SET PRECISION HERE
 	//std::cout << std::fixed << std::setprecision(obj->getPrecision());
 
-	//std::cout << "precision = " << obj->getPrecision() << std::endl;
 	if (obj->forScienceFloat == true) {
 		std::cout << "char: impossible\n";
 		std::cout << "int: impossible\n";
 		std::cout << "float: " << obj->getStr() << std::endl;
 		std::string d_string = obj->getStr().substr(0, obj->getStr().size()-1);
 		std::cout << "double: " << d_string;
+		return o;
 	}
 	else if (obj->forScienceDouble == true) {
 		std::cout << "char: impossible\n";
@@ -194,15 +233,24 @@ std::ostream & operator<<( std::ostream & o, Converter const *obj) {
 		std::cout << "float: " << obj->getStr() << 'f' << std::endl;
 		//std::string d_string = obj->getStr().substr(0, obj->getStr().size()-1);
 		std::cout << "double: " << obj->getStr();
+		return o;
 	}
-	else {
-		if (obj->getChar())
+	if (obj->getChar() && ((obj->getChar() >= 'a' && obj->getChar() <= 'z') || \
+								(obj->getChar() >= 'A' && obj->getChar() <= 'Z')))
 		o << "char: " << obj->getChar() << std::endl;
 	else
 		std::cout << "char: Non displayable\n";
-	o << "int: " << obj->getInt() << std::endl;
-	o << "float: " << std::setprecision(obj->getPrecision()) << std::fixed << obj->getFloat() << "f" << std::endl;
-	o << "double: " << std::setprecision(obj->getPrecision()) << std::fixed << obj->getDouble();
-	}
+	if (obj->overflowInt == true)
+		o << "int: overflow\n";
+	else
+		o << "int: " << obj->getInt() << std::endl;
+	if (obj->overflowFloat == true)
+		o << "float: overflow\n";
+	else
+		o << "float: " << std::setprecision(obj->getPrecision()) << std::fixed << obj->getFloat() << "f" << std::endl;
+	if (obj->overflowDouble == true)
+		o << "double: overflow\n";
+	else
+		o << "double: " << std::setprecision(obj->getPrecision()) << std::fixed << obj->getDouble();
 	return o;
 }

@@ -1,32 +1,5 @@
 #include "Conversion.hpp"
 
-
-// int	ft_atoi_cpp(const char *str)
-// {
-// 	int	minus;
-// 	int	res;
-// 	int	i;
-
-// 	res = 0;
-// 	minus = 1;
-// 	i = 0;
-
-// 	if (str[i] == '-')
-// 	{
-// 		minus = -1;
-// 		i++;
-// 	}
-// 	else if (str[i] == '+')
-// 		i++;
-// 	while (str[i] >= 48 && str[i] <= 57)
-// 	{
-// 		if (isdigit(str[i]) != 0)
-// 			return (0);
-// 		res = (res * 10) + (str[i] - '0');
-// 		i++;//12b
-// 	}
-// 	return (res * minus);
-// }
 int atoi(const char* str)
 {
     return atoi_impl<int>(str);
@@ -51,9 +24,11 @@ int	main(int argc, char **argv) {
 	else if (sample1.isFloat() == true)
 		sample1.convertFloat();
 	else if (sample1.isDouble() == true)
-		std::cout << "isDouble\n";
-	else
+		sample1.convertDouble();
+	else {
 		std::cout << "Type conversion not possible\n";
+		return 0;
+	}
 	std::cout << &sample1 << std::endl;
 	return 0;
 }
