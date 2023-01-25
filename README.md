@@ -1,58 +1,27 @@
 # CPP06
+//check isfloat, handle float min and max according to gpt3 hints
+//same for double
 
-QUESTIONS: How did you tell the difference between float and double?
-***RULE*** For each exercise, the type conversion must be solved using one specific type of casting.
-Your choice will be checked during defense. (the eval sheet requires static_cast to be used)
+***RULE*** For each exercise, the type conversion must be solved using ONE specific type of casting.
 
+ex00: convert scalar types
 
-/*Converting one data type into another data type is called type conversions. There are two types:
+What is a scalar type? - a basic data type that represents a single value (as opposed to a complex one such as an array or struct). Examples of scalar types in C++ include int, char, double and float :)
 
-    Implicit type conversion
-Aka, 'automatic' type conversion is a small-to-large conversion, 'promotion cast'.
+What is type conversion? - also known as type casitng, type conversion is when you convert one data type into another, e.g. int to char and vice versa. Char -> int would be 'type promotion', as we are converting a smaller variable to a larger and can by done implicitly (by the compiler), e.g.
+
+char c = '0';
+int i = c; //value of i is 48, as 48 is the ascii value of '0'
 
 There are some risks associated with implicit type conversion, such as;
 -loss of information, such as sign (when signed is implicitly converted to unsigned)
 -overflow, e.g. when long long converted to float //this is not promotion cast as long long > float
 
-	Explicit type conversion
-Aka, 'type-casting'. Done in one of two ways;
-1) convert by assignment
-int main()
-{
-    double x = 1.2;
-  
-    // Explicit conversion from double to int
-    int sum = (int)x + 1;
-  
-    cout << "Sum = " << sum;
-  
-    return 0;
-}
-
-2) Convert using cast operator. examples: **static_cast; const_cast; reinterpret_cast; dynamic_cast
+Explicit type conversion uses a cast operator. Examples of cast operators are: **static_cast; const_cast; reinterpret_cast; dynamic_cast
 
 *static_cast** Used for conversion between basic data types, such as converting ints to char s and ints to enum s
 
-#include <iostream>
-using namespace std;
-int main()
-{
-    float f = 3.5;
-  
-    // using cast operator
-    int b = static_cast<int>(f);
-  
-    cout << b;
-}
 
-*/
+Whilst it was tempting to use std::numeric_limits to check for overflows, it is forbidden to use templates from the standard template library (STL) in this project series until you get to CPP08.
 
-/*EXAMPLE OF IMPLICIT CONVERSION*/
 
-int	main() {
-
-	int x;
-	for(x=97; x<=122; x++){
-		printf("%c", x); /*Implicit casting from int to char %c*/
-}
-}
