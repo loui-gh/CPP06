@@ -4,7 +4,10 @@
 #include <iostream>
 #include <iomanip> //set precision
 #include <cfloat> //to find float max&min
-#include <limits.h>
+#include <limits.h> //to find int max and min
+#include <cmath> //to infinity and beyond!!
+#include <cstdlib>
+#include <cerrno>
 
 template<typename T>
 T atoi_impl(const char* str)
@@ -66,9 +69,7 @@ class	Converter
 		bool	forScienceDouble;
 		bool	isFiniteNumber(double x);
 
-		bool	overflowInt;
-		bool	overflowDouble;
-		bool	overflowFloat;
+		bool	overflow;
 
 	private:
 

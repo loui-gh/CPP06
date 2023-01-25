@@ -8,9 +8,7 @@ Converter::Converter(char const * userInput) {
 
 	this->_userInput = userInput;
 	this->_str = userInput;
-	this->overflowDouble = false;
-	this->overflowFloat = false;
-	this->overflowInt = false;
+	this->overflow = false;
 }
 
 /*copy constructor*/
@@ -98,23 +96,10 @@ bool	Converter::isFloat(void)
 			return (true);
 		}
 	}
-
-	/*does it contain a decimal point?*/
+	/*does it contain a decimal point and 'f' at the end?*/
 	char	ch = '.';
 	if (getStr().find(ch) != std::string::npos && _userInput[_str.length() - 1] == 'f')
-	{
-		/*is it bigger than float?*/
-		double convertFloat = atof_cpp(this->_userInput);
-		if (convertFloat > FLT_MAX || convertFloat < FLT_MIN) {
-			this->overflowFloat = true;
-			this->overflowInt = true;
-			return false;
-		}
-		else {
-			this->_f = static_cast<float>(convertFloat);
 			return (true);
-		}
-	}
 	return (false);
 }
 
@@ -130,17 +115,10 @@ bool	Converter::isDouble(void)
 			return (true);
 		}
 	}
-	/*is it bigger than float?*/
-	double convertDbl = atof_cpp(this->_userInput);
-	if (convertDbl > DBL_MAX || convertDbl < DBL_MIN) {
-		this->overflowDouble = true;
-		this->overflowFloat = true;
-		this->overflowInt = true;
-		return false;
-	}
-	else
-		this->_d = atof_cpp(this->_userInput);
-	return (true);
+	char	ch = '.';
+	if (getStr().find(ch) != std::string::npos && _userInput[_str.length() - 1] != 'f')
+			return (true);
+	return (false);
 }
 
 void	Converter::convertChar(void) {
@@ -156,14 +134,12 @@ void	Converter::convertChar(void) {
 void	Converter::convertInt(void) {
 
 	std::cout << "IS INT\n";
-	long int	longInt = atoi_impl<long int>(this->_userInput);
+	long int	longInt = atol(this->_userInput);
 	if (this->getStr().length() > 11 || longInt > INT_MAX || longInt < INT_MIN) {
-		this->overflowDouble = true;
-		this->overflowFloat = true;
-		this->overflowInt = true;
+		this->overflow = true;
 	}
 	else {
-		this->_i = longInt;//implicit conversion./
+		this->_i = static_cast<int>(longInt);//implicit
 		this->_c = static_cast<char>(this->_i);
 		this->_f = static_cast<float>(this->_i);
 		this->_d = static_cast<double>(this->_i);
@@ -175,19 +151,39 @@ void	Converter::convertFloat() {
 	std::cout << "IS FLOAT\n";
 	if (forScienceFloat == true)
 		return;
+
+	/*is it bigger than float?*/
+	double convertFloat = std::strtod(this->_str.c_str(), NULL);
+	if (convertFloat > FLT_MAX || convertFloat < FLT_MIN) {
+		this->overflow = true;
+	}
+	else {
+	this->_f = convertFloat;
 	this->_c = static_cast<char>(this->_f);
-	this->_i = static_cast<float>(this->_f);
+	this->_i = static_cast<int>(this->_f);
 	this->_d = static_cast<double>(this->_f);
+	}
 }
 
 void	Converter::convertDouble() {
 
 	std::cout << "IS DOUBLE\n";
 	if (forScienceDouble == true)
-		return;
-	this->_c = static_cast<char>(this->_d);
-	this->_i = static_cast<float>(this->_d);
-	this->_f = static_cast<double>(this->_d);
+	 	return;
+	
+	char *endptr;
+	errno = 0;
+	double convertDbl = std::strtod(this->_str.c_str(), &endptr);
+	if (*endptr != '\0' || errno == ERANGE) {
+		this->overflow = true;
+	}
+	else {
+		this->_d = convertDbl;
+		this->_c = static_cast<char>(this->_d);
+		this->_i = static_cast<int>(this->_d);
+		this->_f = static_cast<float>(this->_d);
+	}
+
 }
 
 
@@ -214,6 +210,7 @@ double	Converter::getDouble() const {
 std::string	Converter::getStr() const {
 	return this->_str;
 }
+
 std::ostream & operator<<( std::ostream & o, Converter const *obj) {
 
 	// YOU NEED TO SET PRECISION HERE
@@ -235,22 +232,24 @@ std::ostream & operator<<( std::ostream & o, Converter const *obj) {
 		std::cout << "double: " << obj->getStr();
 		return o;
 	}
-	if (obj->getChar() && ((obj->getChar() >= 'a' && obj->getChar() <= 'z') || \
-								(obj->getChar() >= 'A' && obj->getChar() <= 'Z')))
+
+	char c = obj->getChar();
+	if (c && ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')))
 		o << "char: " << obj->getChar() << std::endl;
 	else
 		std::cout << "char: Non displayable\n";
-	if (obj->overflowInt == true)
+	
+	if (obj->overflow == true) {
 		o << "int: overflow\n";
-	else
-		o << "int: " << obj->getInt() << std::endl;
-	if (obj->overflowFloat == true)
 		o << "float: overflow\n";
-	else
-		o << "float: " << std::setprecision(obj->getPrecision()) << std::fixed << obj->getFloat() << "f" << std::endl;
-	if (obj->overflowDouble == true)
 		o << "double: overflow\n";
-	else
+	}
+	else {
+		o << "int: " << obj->getInt() << std::endl;
+		std::cout << "precision = " << obj->getPrecision() << std::endl;
+		o << "float: " << std::setprecision(obj->getPrecision()) << std::fixed << obj->getFloat() << "f" << std::endl;
 		o << "double: " << std::setprecision(obj->getPrecision()) << std::fixed << obj->getDouble();
+	}	
+
 	return o;
 }

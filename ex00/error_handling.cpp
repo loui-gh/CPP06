@@ -63,10 +63,17 @@ int	err_check_content(char **argv) {
 		}
 		i++;
 	}
-	//test for combination of numbers and letters 
+	//test for combination of numbers and letters
+	//one f at the end, one e at the beginning, or 'e-' to indicate min
+	// while (argv[1][0]) {
+	// 	if (argv[1][0] )
+	// }
+	k = 0;
 	while (k < i) {
 		test[k] = argv[1][k];
-		if ( k != i - 1 && !isdigit(test[k]) && test[k] != '.') {
+		if ( k != i - 1 && !isdigit(test[k]) && test[k] != '.' && (test[k] != 'e' || \
+						(test[k] != 'e' && test[k + 1] != '-'))) 
+		{
 			std::cout << "Combination of letters and numbers not permitted\n";
 			return 0;
 		}
