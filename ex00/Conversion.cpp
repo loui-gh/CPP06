@@ -157,13 +157,13 @@ void	Converter::convertInt(void) {
 
 	std::cout << "IS INT\n";
 	long int	longInt = atoi_impl<long int>(this->_userInput);
-	if (this->getStr().length() > 11 || longInt > std::numeric_limits<int>::max() || longInt < std::numeric_limits<int>::min()) {
+	if (this->getStr().length() > 11 || longInt > INT_MAX || longInt < INT_MIN) {
 		this->overflowDouble = true;
 		this->overflowFloat = true;
 		this->overflowInt = true;
 	}
 	else {
-		this->_i = 
+		this->_i = longInt;//implicit conversion./
 		this->_c = static_cast<char>(this->_i);
 		this->_f = static_cast<float>(this->_i);
 		this->_d = static_cast<double>(this->_i);

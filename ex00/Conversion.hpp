@@ -2,15 +2,9 @@
 # define CONVERSION_HPP
 
 #include <iostream>
-#include <cctype>
-
-#include <iomanip>
-#include <stdlib.h>
-#include <float.h>
-#include <cmath>
+#include <iomanip> //set precision
+#include <cfloat> //to find float max&min
 #include <limits.h>
-#include <limits>
-# include <cerrno>
 
 template<typename T>
 T atoi_impl(const char* str)

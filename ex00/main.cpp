@@ -10,6 +10,11 @@ double atod(const char *str) {
 	return atoi_impl<double>(str);
 }
 
+float atoff(const char *str) {
+
+	return atoi_impl<float>(str);
+}
+
 int	main(int argc, char **argv) {
 
 	if (!err_check_content(argv) || !err_check_size(argc, argv))

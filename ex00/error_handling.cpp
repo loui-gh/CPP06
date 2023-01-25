@@ -43,10 +43,10 @@ int	err_check_size(int argc, char **argv) {
 
 int	err_check_content(char **argv) {
 
-	int i = 0;
-	int d = 0;
-	int k = 0;
-	int j = 0;
+	char	*test = argv[1];
+	int 	i = 0;
+	int 	d = 0;
+	int 	k = 0;
 
 	if (argv[1][i] == '-')
 		i++;
@@ -61,13 +61,20 @@ int	err_check_content(char **argv) {
 			std::cout << "One decimal point only!\n";
 			return 0;
 		}
-		j += isalpha(argv[1][i]);
-		k += isdigit(argv[1][i]);
 		i++;
 	}
-	if (j > 0 && k > 0 && argv[1][--i] != 'f') {
-		std::cout << "Combination of letters and numbers not permitted\n";
-		return 0;
+	//test for combination of numbers and letters 
+	while (k < i) {
+		test[k] = argv[1][k];
+		if ( k != i - 1 && !isdigit(test[k]) && test[k] != '.') {
+			std::cout << "Combination of letters and numbers not permitted\n";
+			return 0;
+		}
+		if (k == i - 1 && !isdigit(test[k]) && test[k] != 'f') {
+			std::cout << "Combination of letters and numbers not permitted\n";
+			return 0;
+		}
+		k++;
 	}
 	return 1;
 }
