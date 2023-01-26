@@ -42,7 +42,9 @@ class	Converter
 		bool	forScienceDouble;
 		bool	isFiniteNumber(double x);
 
-		bool	overflow;
+		bool	overflowInt;
+		bool	overflowFloat;
+		bool	overflowDouble;
 
 	private:
 

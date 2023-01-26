@@ -20,5 +20,17 @@ int	main() {
 	std::cout << "The memory address of addy is: "  << std::hex << addy << std::endl;
 	std::cout << "The memory address of scnd_ptr is: "<< scnd_ptr << std::endl;
 
+	Data **dbl_ptr = &ptr;
+	uintptr_t dbl_addy;
+	dbl_addy = serialize(ptr);
+	Data *check = deserialize(dbl_addy);
+
+	std::cout << std::endl << "The memory address of ptr is: " << ptr << std::endl;
+	std::cout << "The memory address of dbl_addy is: "  << std::hex << dbl_addy << std::endl;
+	std::cout << "The memory address of check is: "<< check << std::endl;
+	std::cout << "The memory address of dbl_ptr is: "<< *dbl_ptr << std::endl;
+
+	
+
 	return 0;
 }

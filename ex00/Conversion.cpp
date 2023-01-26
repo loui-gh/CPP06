@@ -8,7 +8,10 @@ Converter::Converter(char const * userInput) {
 
 	this->_userInput = userInput;
 	this->_str = userInput;
-	this->overflow = false;
+	this->overflowInt = false;
+	this->overflowFloat = false;
+	this->overflowDouble = false;
+
 }
 
 /*copy constructor*/
@@ -134,12 +137,15 @@ void	Converter::convertChar(void) {
 void	Converter::convertInt(void) {
 
 	std::cout << "IS INT\n";
-	long int	longInt = atol(this->_userInput);
-	if (this->getStr().length() > 11 || longInt > INT_MAX || longInt < INT_MIN) {
-		this->overflow = true;
+	char *endptr;
+	double	convertInt = std::strtod(this->_str.c_str(), &endptr);
+	if (this->getStr().length() > 11 || convertInt > INT_MAX || convertInt < INT_MIN) {
+		this->overflowInt = true;
+		this->overflowDouble = true;
+		this->overflowFloat = true;
 	}
 	else {
-		this->_i = static_cast<int>(longInt);//implicit
+		this->_i = static_cast<int>(convertInt);//implicit
 		this->_c = static_cast<char>(this->_i);
 		this->_f = static_cast<float>(this->_i);
 		this->_d = static_cast<double>(this->_i);
@@ -153,15 +159,21 @@ void	Converter::convertFloat() {
 		return;
 
 	/*is it bigger than float?*/
-	double convertFloat = std::strtod(this->_str.c_str(), NULL);
+	char *endptr;
+	double convertFloat = std::strtod(this->_str.c_str(), &endptr);
 	if (convertFloat > FLT_MAX || convertFloat < FLT_MIN) {
-		this->overflow = true;
+		this->overflowInt = true;
+		this->overflowDouble = true;
+		this->overflowFloat = true;
 	}
 	else {
-	this->_f = convertFloat;
-	this->_c = static_cast<char>(this->_f);
-	this->_i = static_cast<int>(this->_f);
-	this->_d = static_cast<double>(this->_f);
+		this->_f = convertFloat;
+		this->_c = static_cast<char>(this->_f);
+		if (this->_f > INT_MAX || this->_f < INT_MIN)
+			this->overflowInt = true;
+		else
+			this->_i = static_cast<int>(this->_f);
+		this->_d = static_cast<double>(this->_f);
 	}
 }
 
@@ -175,13 +187,21 @@ void	Converter::convertDouble() {
 	errno = 0;
 	double convertDbl = std::strtod(this->_str.c_str(), &endptr);
 	if (*endptr != '\0' || errno == ERANGE) {
-		this->overflow = true;
+		this->overflowInt = true;
+		this->overflowDouble = true;
+		this->overflowFloat = true;
 	}
 	else {
 		this->_d = convertDbl;
 		this->_c = static_cast<char>(this->_d);
-		this->_i = static_cast<int>(this->_d);
-		this->_f = static_cast<float>(this->_d);
+		if (this->_d > INT_MAX || this->_d < INT_MIN)
+			this->overflowInt = true;
+		else
+			this->_i = static_cast<int>(this->_d);
+		if (this->_d > FLT_MAX || this->_d < FLT_MIN)
+			this->overflowFloat = true;
+		else
+			this->_f = static_cast<float>(this->_d);
 	}
 
 }
@@ -239,17 +259,20 @@ std::ostream & operator<<( std::ostream & o, Converter const *obj) {
 	else
 		std::cout << "char: Non displayable\n";
 	
-	if (obj->overflow == true) {
+	if (obj->overflowInt == true)
 		o << "int: overflow\n";
-		o << "float: overflow\n";
-		o << "double: overflow\n";
-	}
-	else {
+	else
 		o << "int: " << obj->getInt() << std::endl;
-		std::cout << "precision = " << obj->getPrecision() << std::endl;
+
+	if (obj->overflowFloat == true)
+		o << "float: overflow\n";
+	else
 		o << "float: " << std::setprecision(obj->getPrecision()) << std::fixed << obj->getFloat() << "f" << std::endl;
+
+	if (obj->overflowDouble == true)
+		o << "double: overflow\n";
+	else 
 		o << "double: " << std::setprecision(obj->getPrecision()) << std::fixed << obj->getDouble();
-	}	
 
 	return o;
 }
