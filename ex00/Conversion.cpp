@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Conversion.cpp                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: Loui :) <loflavel@students.42wolfsburg.de> +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/02/07 12:38:00 by Loui :)           #+#    #+#             */
+/*   Updated: 2023/02/07 12:38:02 by Loui :)          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 /*
 1) Recognise type of variable input as string
 2) convert implicitly or explicity to that variable

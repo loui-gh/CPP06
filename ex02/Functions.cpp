@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Functions.cpp                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: Loui :) <loflavel@students.42wolfsburg.de> +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/02/07 12:38:49 by Loui :)           #+#    #+#             */
+/*   Updated: 2023/02/07 12:38:51 by Loui :)          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "Classes.hpp"
 
 /*randomly instanciates A, B or C and returns the instance as a Base pointer. Feel free
